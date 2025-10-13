@@ -50,9 +50,11 @@ venv/
 node_modules/
 build/
 dist/
+.env
 
 # Uploads or temp files
 uploads/
+db/
 
 # System files
 .DS_Store
