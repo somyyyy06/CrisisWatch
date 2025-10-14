@@ -1,0 +1,31 @@
+/* src/components/IncidentStatusBar.css */
+.incident-status-bar {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.status-card {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+.status-card .count {
+  font-size: 1.5rem;
+}
+
+.status-card.critical {
+  background-color: #e74c3c; /* red */
+}
+
+.status-card.moderate {
+  background-color: #f39c12; /* orange */
+}
+
+.status-card.resolved {
+  background-color: #2ecc71; /* green */
+}

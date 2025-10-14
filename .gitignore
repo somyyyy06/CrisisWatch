@@ -1,0 +1,60 @@
+<<<<<<< HEAD
+# -------------------------------
+# PYTHON ENVIRONMENTS
+# -------------------------------
+venv/
+*/venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# -------------------------------
+# NODE / REACT
+# -------------------------------
+node_modules/
+build/
+dist/
+*.log
+
+# -------------------------------
+# UPLOADS / TEMP FILES
+# -------------------------------
+uploads/
+db/
+*.sqlite3
+*.db
+
+# -------------------------------
+# SYSTEM FILES
+# -------------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------------
+# IDE / EDITOR FILES
+# -------------------------------
+.vscode/
+.idea/
+*.swp
+=======
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+*.db
+
+# Node / React
+node_modules/
+build/
+dist/
+
+# Uploads or temp files
+uploads/
+
+# System files
+.DS_Store
+Thumbs.db
+>>>>>>> ae8888d2 (Initial commit - CrisisWatch project)
