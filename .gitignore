@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # -------------------------------
 # PYTHON ENVIRONMENTS
 # -------------------------------
@@ -38,25 +37,3 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-=======
-# Python
-__pycache__/
-*.pyc
-venv/
-.env
-*.db
-
-# Node / React
-node_modules/
-build/
-dist/
-.env
-
-# Uploads or temp files
-uploads/
-db/
-
-# System files
-.DS_Store
-Thumbs.db
->>>>>>> ae8888d2 (Initial commit - CrisisWatch project)
