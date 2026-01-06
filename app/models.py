@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, func, Boolean, ForeignKey, Text
 from geoalchemy2 import Geography
-from backend.database import Base
+from app.database import Base
 
 
 # ----------------------------

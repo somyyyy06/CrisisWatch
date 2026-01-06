@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 from transformers import pipeline
 import spacy
 from geopy.geocoders import Nominatim
-from backend.database import SessionLocal
-from backend import models
+from app.database import SessionLocal
+from app import models
 from datetime import datetime
 from sqlalchemy import func
 

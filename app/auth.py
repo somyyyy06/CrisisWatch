@@ -8,8 +8,8 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from backend.database import SessionLocal
-from backend import models, crud
+from app.database import SessionLocal
+from app import models, crud
 import os
 
 # ----------------------------

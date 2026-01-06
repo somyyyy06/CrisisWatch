@@ -1,8 +1,8 @@
 # backend/api/feed.py
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from backend import models, schemas
-from backend.database import SessionLocal
+from app import models, schemas
+from app.database import SessionLocal
 from sqlalchemy import desc
 
 router = APIRouter(prefix="/feed", tags=["feed"])

@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from pydantic import BaseModel
 from typing import Optional
-from backend.database import get_db
-from backend.models import Subscription
-from backend.auth import get_current_user
+from app.database import get_db
+from app.models import Subscription
+from app.auth import get_current_user
 
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
 

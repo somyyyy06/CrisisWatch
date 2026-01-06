@@ -5,10 +5,10 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
-from backend import database, models, schemas
-from backend.ml.inference import get_credibility_score
-from backend.auth import get_current_user
-from backend.ws import manager 
+from app import database, models, schemas
+from app.ml.inference import get_credibility_score
+from app.auth import get_current_user
+from app.ws import manager 
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 

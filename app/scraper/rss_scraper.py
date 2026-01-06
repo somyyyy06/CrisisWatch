@@ -5,7 +5,7 @@ import re
 import time
 
 # We call fetch_url from processor which has a robust requests-based fetcher
-from backend.scraper.processor import fetch_url
+from app.scraper.processor import fetch_url
 
 # Optional: newspaper extraction (best effort)
 try:

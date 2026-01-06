@@ -4,10 +4,10 @@ from sqlalchemy import func, text
 from datetime import datetime
 from fastapi import HTTPException, status
 
-from backend import models, schemas
-from backend.auth import get_password_hash
-from backend.tasks import notify_user_email
-from backend.ml.inference import get_credibility_score
+from app import models, schemas
+from app.auth import get_password_hash
+from app.tasks import notify_user_email
+from app.ml.inference import get_credibility_score
 
 # ----------------------------
 # USER CRUD
