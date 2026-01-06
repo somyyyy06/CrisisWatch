@@ -16,3 +16,4 @@ xgboost
 geoalchemy2
 requests
 gunicorn==23.0.0
+email-validator
