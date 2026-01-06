@@ -1,26 +1,18 @@
-from fastapi import FastAPI, Depends, HTTPException, Request, WebSocket, WebSocketDisconnect, Form, File, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.exceptions import RequestValidationError
 
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from datetime import datetime, timedelta
-from typing import Optional
 import os
 import logging
-import json
 
 # ✅ ABSOLUTE IMPORTS (CRITICAL)
-from backend import database, models, crud, schemas
-from backend.auth import verify_password, create_access_token, decode_access_token, get_current_user
-from backend.api.feed import router as feed_router
-from backend.api import subscriptions, incidents
-from backend.api.usgs_ingestor import fetch_and_store
-from backend.api.websocket_manager import manager
-from backend.ml.summarizer import generate_summary
+from app import database, models, crud, schemas
+from app.auth import verify_password, create_access_token
+from app.api.feed import router as feed_router
+from app.api import subscriptions, incidents
+from app.api.websocket_manager import manager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,7 +23,7 @@ app = FastAPI(title="CrisisWatch API", version="1.0.0")
 # Static uploads
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # ----------------------------
 # CORS
@@ -61,7 +53,10 @@ app.include_router(incidents.router)
 # ----------------------------
 # Auth
 @app.post("/auth/token", response_model=schemas.Token)
-def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(
+    form: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
     user = crud.get_user_by_username(db, form.username)
     if not user or not verify_password(form.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -84,4 +79,4 @@ async def ws_incidents(websocket: WebSocket):
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        await manager.disconnect(websocket)
+        manager.disconnect(websocket)

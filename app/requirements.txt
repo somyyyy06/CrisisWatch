@@ -15,4 +15,4 @@ scikit-learn
 xgboost
 geoalchemy2
 requests
-gunicorn
+gunicorn==23.0.0

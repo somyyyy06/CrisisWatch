@@ -1,17 +1,6 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime,
-    func,
-    Boolean,
-    ForeignKey,
-    Text,
-)
+from sqlalchemy import Column, Integer, String, Float, DateTime, func, Boolean, ForeignKey, Text
 from geoalchemy2 import Geography
-
-from .database import Base
+from backend.database import Base
 
 
 # ----------------------------
@@ -28,18 +17,18 @@ class Incident(Base):
     lon = Column(Float, nullable=True)
     lat = Column(Float, nullable=True)
     location = Column(Geography(geometry_type="POINT", srid=4326), nullable=True)
-    photo_path = Column(String, nullable=True)
+    photo_path = Column(String, nullable=True)   # ✅ NEW FIELD
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 # ----------------------------
-# User model
+# User model (for auth)
 # ----------------------------
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
+    username = Column(String, unique=True, index=True, nullable=False)  # ✅ Added username
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
@@ -66,7 +55,7 @@ class Subscription(Base):
 
 
 # ----------------------------
-# Scraped Incidents model
+# Scraped Incidents model (NEW)
 # ----------------------------
 class ScrapedIncident(Base):
     __tablename__ = "scraped_incidents"
@@ -76,7 +65,7 @@ class ScrapedIncident(Base):
     description = Column(Text, nullable=True)
     incident_type = Column(String, nullable=True)
     source_url = Column(String, nullable=True)
-    location_text = Column(String, nullable=True)
+    location_text = Column(String, nullable=True)  # e.g. "Delhi, India"
     lon = Column(Float, nullable=True)
     lat = Column(Float, nullable=True)
     credibility_score = Column(Float, nullable=True, default=0.0)
