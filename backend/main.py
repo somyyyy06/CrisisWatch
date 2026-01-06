@@ -13,13 +13,14 @@ import os
 import logging
 import json
 
-from . import database, models, crud, schemas
-from .auth import verify_password, create_access_token, decode_access_token, get_current_user
-from .api.feed import router as feed_router
-from .api import subscriptions, incidents
-from .api.usgs_ingestor import fetch_and_store
-from .api.websocket_manager import manager
-from .ml.summarizer import generate_summary
+# ✅ ABSOLUTE IMPORTS (CRITICAL)
+from backend import database, models, crud, schemas
+from backend.auth import verify_password, create_access_token, decode_access_token, get_current_user
+from backend.api.feed import router as feed_router
+from backend.api import subscriptions, incidents
+from backend.api.usgs_ingestor import fetch_and_store
+from backend.api.websocket_manager import manager
+from backend.ml.summarizer import generate_summary
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -83,4 +84,4 @@ async def ws_incidents(websocket: WebSocket):
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
