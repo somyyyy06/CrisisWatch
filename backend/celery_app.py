@@ -1,4 +1,10 @@
 from celery import Celery
 import os
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-celery = Celery("crisis", broker=redis_url, backend=redis_url)
+
+REDIS_URL = os.getenv("REDIS_URL")
+
+celery = Celery(
+    "crisiswatch",
+    broker=REDIS_URL if REDIS_URL else None,
+    backend=REDIS_URL if REDIS_URL else None,
+)
