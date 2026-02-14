@@ -3,7 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 
-const API = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+const API =
+  process.env.REACT_APP_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000"
+    : "https://crisiswatch.onrender.com");
 const WS_BASE = process.env.REACT_APP_WS_URL || API; // e.g. http://127.0.0.1:8000
 
 // severity thresholds by credibility_score
@@ -178,9 +182,10 @@ export default function MapView() {
   function tryWebsocket() {
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const wsProto = WS_BASE.startsWith("https") ? "wss" : "ws";
-      const base = WS_BASE.replace(/^https?:\/\//, "");
-      const wsUrl = `${wsProto}://${base}/ws/incidents${token ? `?token=${token}` : ""}`;
+      // Convert http/https URL to ws/wss URL
+      let wsUrl = WS_BASE.replace(/^http/, "ws");
+      if (wsUrl.endsWith("/")) wsUrl = wsUrl.slice(0, -1);
+      wsUrl = `${wsUrl}/ws/incidents${token ? `?token=${token}` : ""}`;
       const ws = new WebSocket(wsUrl);
       ws.onmessage = (ev) => {
         try {

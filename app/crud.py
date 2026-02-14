@@ -19,13 +19,7 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    existing = get_user_by_email(db, user.email)
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered. Please login instead."
-        )
-
+    # Email check is now done in the endpoint, so just create the user
     hashed_password = get_password_hash(user.password)
     db_user = models.User(
         username=user.username or user.email,

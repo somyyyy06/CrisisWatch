@@ -4,7 +4,11 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "./ReportForm.css";
 
-const API = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+const API =
+  process.env.REACT_APP_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000"
+    : "https://crisiswatch.onrender.com");
 
 function MiniPicker({ setLatLon }) {
   useMapEvents({

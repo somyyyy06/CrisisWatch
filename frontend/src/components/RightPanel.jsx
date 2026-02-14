@@ -2,7 +2,11 @@
 import React, { useState } from "react";
 import PerformanceMetrics from "./PerformanceMetrics";
 
-const API = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+const API =
+  process.env.REACT_APP_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000"
+    : "https://crisiswatch.onrender.com");
 
 export default function RightPanel({ metrics, feed }) {
   const m = metrics || { apiTime: 142, accuracy: 75, dataProcessing: 76 };

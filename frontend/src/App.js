@@ -10,7 +10,11 @@ import TopStats from "./components/TopStats";
 import IncidentsSocket from "./components/IncidentsSocket";
 import "./App.css";
 
-const API = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+const API =
+  process.env.REACT_APP_API_URL ||
+  (window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000"
+    : "https://crisiswatch.onrender.com");
 
 export default function App() {
   const [isReportOpen, setIsReportOpen] = useState(false);

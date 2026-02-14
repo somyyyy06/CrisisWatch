@@ -54,11 +54,19 @@ app.include_router(incidents.router)
 # Auth
 @app.post("/auth/signup", response_model=schemas.UserOut, status_code=201)
 def signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Check both username and email
     existing_user = crud.get_user_by_username(db, payload.username)
     if existing_user:
         raise HTTPException(
             status_code=400,
-            detail="User already exists"
+            detail="Username already taken"
+        )
+    
+    existing_email = crud.get_user_by_email(db, payload.email)
+    if existing_email:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered. Please login instead."
         )
 
     user = crud.create_user(db, payload)
@@ -70,7 +78,12 @@ def login(
     form: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
+    # Try to find user by username or email
     user = crud.get_user_by_username(db, form.username)
+    if not user:
+        # If not found by username, try by email
+        user = crud.get_user_by_email(db, form.username)
+    
     if not user or not verify_password(form.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 

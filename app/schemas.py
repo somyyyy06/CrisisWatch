@@ -72,4 +72,4 @@ class ScrapedIncident(ScrapedIncidentBase):
     severity: Optional[str] = None  # computed field
 
     class Config:
-        orm_mode = True
+        from_attributes = True

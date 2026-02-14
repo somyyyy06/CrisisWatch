@@ -40,16 +40,16 @@ export default function Sidebar() {
     .filter((it) => (severities.length === 0 ? true : severities.includes(it.severity)))
     .filter((it) => filterByTime(it));
 
-  // 🔑 Compute and dispatch counts
-  function updateCounts(list) {
-    const counts = { critical: 0, moderate: 0, resolved: 0, total: list.length };
-    list.forEach((it) => {
+  // 🔑 Dispatch counts whenever allIncidents changes (moved to useEffect to avoid setState-during-render warning)
+  useEffect(() => {
+    const counts = { critical: 0, moderate: 0, resolved: 0, total: allIncidents.length };
+    allIncidents.forEach((it) => {
       if (it.severity === "critical") counts.critical++;
       else if (it.severity === "moderate") counts.moderate++;
       else if (it.severity === "resolved") counts.resolved++;
     });
     window.dispatchEvent(new CustomEvent("incidents:update", { detail: { counts } }));
-  }
+  }, [allIncidents]);
 
   // Listen for incidents
   useEffect(() => {
@@ -69,11 +69,7 @@ export default function Sidebar() {
             lon: f.geometry?.coordinates?.[0],
           };
         });
-        setAllIncidents((prev) => {
-          const merged = [...list, ...prev];
-          updateCounts(merged);
-          return merged;
-        });
+        setAllIncidents((prev) => [...list, ...prev]);
       }
     };
 
@@ -91,24 +87,16 @@ export default function Sidebar() {
         lat: f.geometry?.coordinates?.[1],
         lon: f.geometry?.coordinates?.[0],
       };
-      setAllIncidents((prev) => {
-        const merged = [inc, ...prev];
-        updateCounts(merged);
-        return merged;
-      });
+      setAllIncidents((prev) => [inc, ...prev]);
     };
 
     // 🔑 Handle incident resolution
     const onResolved = (e) => {
       const { id } = e.detail || {};
       if (!id) return;
-      setAllIncidents((prev) => {
-        const updated = prev.map((it) =>
-          it.id === id ? { ...it, severity: "resolved" } : it
-        );
-        updateCounts(updated);
-        return updated;
-      });
+      setAllIncidents((prev) =>
+        prev.map((it) => (it.id === id ? { ...it, severity: "resolved" } : it))
+      );
     };
 
     window.addEventListener("incidents:update", onUpdate);
