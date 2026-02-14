@@ -54,8 +54,16 @@ app.include_router(incidents.router)
 # Auth
 @app.post("/auth/signup", response_model=schemas.UserOut, status_code=201)
 def signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
+    existing_user = crud.get_user_by_username(db, payload.username)
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="User already exists"
+        )
+
     user = crud.create_user(db, payload)
     return user
+
 
 @app.post("/auth/token", response_model=schemas.Token)
 def login(
