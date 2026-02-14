@@ -8,9 +8,9 @@ from alembic import context
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Import your models' Base
-from backend.models import Base  # ✅ Import Base from models (not from database)
+from app.models import Base  # ✅ Import Base from models (not from database)
 # Import models to ensure they are registered on Base
-from backend import models
+from app import models
 
 # Alembic Config object
 config = context.config

@@ -1,58 +1,108 @@
 /* ReportForm.css */
 
 .report-form-container {
-  background: var(--card, #101828);
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
-  color: #fff;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(10, 18, 34, 0.98));
+  padding: 24px 26px 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.5);
+  color: #f8fafc;
   width: 100%;
-  max-width: 480px;
-  margin: 20px auto;
+}
+
+.report-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.report-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #34d399, #38bdf8);
+  color: #04131f;
+  font-weight: 700;
+  font-size: 22px;
 }
 
 .report-form-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  margin-bottom: 16px;
-  text-align: center;
-  color: #fff;
+  margin: 0;
+  color: #f8fafc;
 }
 
-.report-form label {
+.report-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #a3b1c8;
+}
+
+.report-section {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9aa7bf;
+  margin: 0 0 12px;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.report-field label {
   display: block;
-  margin-top: 12px;
   margin-bottom: 6px;
-  font-size: 14px;
-  color: #e6eefc;
+  font-size: 13px;
+  color: #e2e8f0;
 }
 
 .report-form input,
 .report-form select,
 .report-form textarea {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #0d1526;
-  color: #fff;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.9);
+  color: #f8fafc;
   font-size: 14px;
   outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .report-form input:focus,
 .report-form select:focus,
 .report-form textarea:focus {
-  border-color: var(--accent, #2f80ed);
-  box-shadow: 0 0 0 2px rgba(47, 128, 237, 0.25);
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.report-form textarea {
+  min-height: 110px;
+  resize: vertical;
 }
 
 .map-box {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
   overflow: hidden;
-  height: 200px;
-  margin-bottom: 8px;
+  height: 220px;
+  margin: 10px 0 12px;
 }
 
 .map {
@@ -60,43 +110,70 @@
   width: 100%;
 }
 
-.coords {
+.coords-row {
+  display: flex;
+  gap: 12px;
   font-size: 12px;
-  color: var(--muted, #a0aec0);
-  display: block;
-  margin-bottom: 8px;
+  color: #cbd5f5;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px dashed rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  padding: 8px 12px;
 }
 
 .file-input {
-  background: #0d1526;
-  padding: 6px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.75);
+  color: #cbd5f5;
+  font-size: 12px;
+}
+
+.file-input input {
+  width: auto;
+  color: #e2e8f0;
 }
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .form-status {
-  margin-top: 10px;
   font-size: 13px;
-  color: #22c55e;
-  text-align: center;
+  color: #38bdf8;
 }
 
 .report-form .btn {
-  background: var(--accent, #2f80ed);
-  color: white;
+  background: linear-gradient(135deg, #38bdf8, #34d399);
+  color: #04131f;
   border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .report-form .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .report-form-container {
+    padding: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

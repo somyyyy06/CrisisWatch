@@ -109,39 +109,44 @@ export default function AuthForm({ initialMode = "login", onAuth }) {
 
   if (token) {
     return (
-      <div className="auth-modal">
-        <p>✅ You are signed in.</p>
+      <div className="auth-card auth-signed-in">
+        <div>
+          <p className="auth-signed-title">You are signed in</p>
+          <p className="auth-signed-sub">Access confirmed. You can report incidents and manage alerts.</p>
+        </div>
         <div className="auth-actions">
           <button className="btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
-        <div className="auth-status">{status}</div>
+        {status ? <div className="auth-status">{status}</div> : null}
       </div>
     );
   }
 
   return (
-    <div className="auth-modal">
-      <h3>{mode === "login" ? "Sign In" : "Sign Up"}</h3>
-
+    <div className="auth-card">
       <form className="auth-form" onSubmit={handleSubmit}>
-        <div>
-          <label>Email</label>
+        <div className="auth-field">
+          <label>Email address</label>
           <input
+            className="auth-input"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@agency.org"
             required
           />
         </div>
 
-        <div>
+        <div className="auth-field">
           <label>Password</label>
           <input
+            className="auth-input"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Minimum 4 characters"
             required
           />
         </div>
@@ -154,7 +159,7 @@ export default function AuthForm({ initialMode = "login", onAuth }) {
                 : "Sign In"
               : loading
               ? "Signing up..."
-              : "Sign Up"}
+              : "Create account"}
           </button>
         </div>
       </form>
@@ -162,22 +167,22 @@ export default function AuthForm({ initialMode = "login", onAuth }) {
       <div className="auth-switch">
         {mode === "login" ? (
           <p>
-            No account?{" "}
+            New here?{" "}
             <button type="button" onClick={() => setMode("signup")}>
-              Signup here
+              Create an account
             </button>
           </p>
         ) : (
           <p>
-            Already have an account?{" "}
+            Already registered?{" "}
             <button type="button" onClick={() => setMode("login")}>
-              Login here
+              Sign in instead
             </button>
           </p>
         )}
       </div>
 
-      <div className="auth-status">{status}</div>
+      {status ? <div className="auth-status">{status}</div> : null}
     </div>
   );
 }

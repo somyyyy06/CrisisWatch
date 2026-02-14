@@ -26,6 +26,7 @@ def create_app() -> FastAPI:
     # Lazy imports (CRITICAL)
     from app.main import (
         get_db,
+        signup,
         login,
         health,
         ws_incidents,
@@ -38,6 +39,7 @@ def create_app() -> FastAPI:
     app.include_router(subscriptions.router)
     app.include_router(incidents.router)
 
+    app.add_api_route("/auth/signup", signup, methods=["POST"])
     app.add_api_route("/auth/token", login, methods=["POST"])
     app.add_api_route("/health", health, methods=["GET"])
     app.add_api_websocket_route("/ws/incidents", ws_incidents)

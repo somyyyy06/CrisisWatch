@@ -19,7 +19,7 @@ export default function ReportForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [disasterType, setDisasterType] = useState("Flood");
-  const [latLon, setLatLon] = useState([28.6139, 77.209]); // Default: Delhi
+  const [latLon, setLatLon] = useState([28.6139, 77.209]);
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -45,7 +45,7 @@ export default function ReportForm() {
       form.append("lat", latLon[0]);
       form.append("file", file);
 
-      const resp = await fetch(`${API}/incidents/`, {
+      const resp = await fetch(`${API}/incidents/submit`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         body: form,
@@ -82,7 +82,6 @@ export default function ReportForm() {
           },
         };
 
-        // Notify global listeners (map and stats)
         window.dispatchEvent(
           new CustomEvent("incident:created", { detail: feature })
         );
@@ -93,7 +92,7 @@ export default function ReportForm() {
           })
         );
 
-        setStatus("✅ Uploaded successfully — ID: " + data.id);
+        setStatus("Uploaded successfully. ID: " + data.id);
         setTitle("");
         setDescription("");
         setFile(null);
@@ -125,66 +124,96 @@ export default function ReportForm() {
 
   return (
     <div className="report-form-container">
-      <h2 className="report-form-title">➕ Report New Incident</h2>
+      <div className="report-header">
+        <div className="report-icon">+</div>
+        <div>
+          <h2 className="report-form-title">Report new incident</h2>
+          <p className="report-subtitle">
+            Share verified details to alert the response team.
+          </p>
+        </div>
+      </div>
 
       <form className="report-form" onSubmit={handleSubmit}>
-        <label>Incident Title</label>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title..."
-          required
-        />
+        <div className="report-section">
+          <p className="section-title">Incident details</p>
+          <div className="report-grid">
+            <div className="report-field">
+              <label>Incident title</label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Power outage near downtown"
+                required
+              />
+            </div>
 
-        <label>Incident Type</label>
-        <select
-          value={disasterType}
-          onChange={(e) => setDisasterType(e.target.value)}
-        >
-          <option>Flood</option>
-          <option>Earthquake</option>
-          <option>Fire</option>
-          <option>Crime</option>
-          <option>Other</option>
-        </select>
-
-        <label>Location (click on the map)</label>
-        <div className="map-box">
-          <MapContainer center={latLon} zoom={6} className="map">
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <MiniPicker setLatLon={setLatLon} />
-            {isValidLatLon && <Marker position={latLon} icon={markerIcon} />}
-          </MapContainer>
+            <div className="report-field">
+              <label>Incident type</label>
+              <select
+                value={disasterType}
+                onChange={(e) => setDisasterType(e.target.value)}
+              >
+                <option>Flood</option>
+                <option>Earthquake</option>
+                <option>Fire</option>
+                <option>Crime</option>
+                <option>Traffic</option>
+                <option>Power Outage</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <small className="coords">
-          📍 Lat {latLon[0].toFixed(4)}, Lon {latLon[1].toFixed(4)}
-        </small>
+        <div className="report-section">
+          <p className="section-title">Location</p>
+          <label>Click on the map to drop a pin</label>
+          <div className="map-box">
+            <MapContainer center={latLon} zoom={6} className="map">
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <MiniPicker setLatLon={setLatLon} />
+              {isValidLatLon && <Marker position={latLon} icon={markerIcon} />}
+            </MapContainer>
+          </div>
 
-        <label>Description</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Brief description..."
-          required
-        />
+          <div className="coords-row">
+            <span>Lat {latLon[0].toFixed(4)}</span>
+            <span>Lon {latLon[1].toFixed(4)}</span>
+          </div>
+        </div>
 
-        <label>Attach Image (jpg/png)</label>
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png"
-          onChange={(e) => setFile(e.target.files?.[0])}
-          className="file-input"
-          required
-        />
+        <div className="report-section">
+          <p className="section-title">Description and evidence</p>
+          <div className="report-field">
+            <label>Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What is happening, who is impacted, and when did it start?"
+              required
+            />
+          </div>
+
+          <div className="report-field">
+            <label>Upload photo</label>
+            <div className="file-input">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+              <span>{file ? file.name : "Attach a clear image (jpg/png)"}</span>
+            </div>
+          </div>
+        </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit Report"}
+          <button className="btn" type="submit" disabled={submitting}>
+            {submitting ? "Submitting..." : "Submit report"}
           </button>
+          {status ? <div className="form-status">{status}</div> : null}
         </div>
-
-        {status && <div className="form-status">{status}</div>}
       </form>
     </div>
   );

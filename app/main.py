@@ -52,6 +52,11 @@ app.include_router(incidents.router)
 
 # ----------------------------
 # Auth
+@app.post("/auth/signup", response_model=schemas.UserOut, status_code=201)
+def signup(payload: schemas.UserCreate, db: Session = Depends(get_db)):
+    user = crud.create_user(db, payload)
+    return user
+
 @app.post("/auth/token", response_model=schemas.Token)
 def login(
     form: OAuth2PasswordRequestForm = Depends(),

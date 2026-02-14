@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import PerformanceMetrics from "./PerformanceMetrics";
 
+const API = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+
 export default function RightPanel({ metrics, feed }) {
   const m = metrics || { apiTime: 142, accuracy: 75, dataProcessing: 76 };
 
@@ -16,7 +18,7 @@ export default function RightPanel({ metrics, feed }) {
     setLoading(true);
     setSummary(""); // clear old result
     try {
-      const response = await fetch("http://127.0.0.1:8000/summarize", {
+      const response = await fetch(`${API}/summarize`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,50 +35,31 @@ export default function RightPanel({ metrics, feed }) {
   };
 
   return (
-    <div>
+    <div className="right-panel">
       {/* AI Analysis Section */}
       <h3>AI Analysis</h3>
       <div className="small">Credibility Engine</div>
-      <div style={{ marginTop: 8 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ fontWeight: 700 }}>
+      <div className="panel-block">
+        <div className="panel-row">
+          <div className="panel-title">
             Processing {(m.total_incidents || 240) / 2} reports/hour
           </div>
-          <div style={{ color: "#39b54a", fontSize: 13 }}>Active</div>
+          <div className="panel-pill">Active</div>
         </div>
 
-        {/* Accuracy Bar */}
-        <div style={{ marginTop: 10 }}>
-          <div
-            style={{
-              height: 10,
-              background: "rgba(255,255,255,0.05)",
-              borderRadius: 8,
-              overflow: "hidden",
-            }}
-          >
+        <div className="accuracy-bar">
+          <div className="accuracy-track">
             <div
-              style={{
-                width: `${m.accuracy ?? 75}%`,
-                height: "100%",
-                background: "linear-gradient(90deg,#2F80ED,#2AA7FF)",
-              }}
+              className="accuracy-fill"
+              style={{ width: `${m.accuracy ?? 75}%` }}
             />
           </div>
-        </div>
-        <div style={{ marginTop: 8, fontSize: 13, color: "#9aa7bf" }}>
-          {(m.accuracy ?? 75)}% accuracy rate
+          <div className="accuracy-caption">{(m.accuracy ?? 75)}% accuracy rate</div>
         </div>
       </div>
 
       {/* 🚀 Summary Generator */}
-      <div style={{ marginTop: 18 }}>
+      <div className="panel-block">
         <h3>Summary Generator</h3>
         <div className="small">Paste news/article below to get a summary</div>
 
@@ -91,8 +74,7 @@ export default function RightPanel({ metrics, feed }) {
         {/* Summarize Button */}
         <button
           onClick={handleSummarize}
-          className="btn"
-          style={{ marginTop: 8 }}
+          className="btn summary-button"
           disabled={loading}
         >
           {loading ? "Summarizing..." : "Generate Summary"}
@@ -107,30 +89,22 @@ export default function RightPanel({ metrics, feed }) {
       </div>
 
       {/* Live Data Feed */}
-      <div style={{ marginTop: 18 }}>
+      <div className="panel-block">
         <h3>Live Data Feed</h3>
-        <div
-          className="feed-list"
-          style={{ marginTop: 8, maxHeight: 300, overflowY: "auto" }}
-        >
+        <div className="feed-list">
           {feed && feed.length > 0 ? (
             feed.map((item, idx) => (
               <div
                 key={idx}
-                style={{
-                  padding: "8px 0",
-                  borderBottom: "1px solid rgba(255,255,255,0.05)",
-                }}
+                className="feed-item"
               >
-                <div style={{ fontWeight: 600 }}>{item.title}</div>
-                <div
-                  style={{ fontSize: 13, color: "#9aa7bf", marginTop: 2 }}
-                >
+                <div className="feed-title">{item.title}</div>
+                <div className="feed-summary">
                   {item.summary ||
                     item.description?.slice(0, 100) ||
                     "No details available"}
                 </div>
-                <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>
+                <div className="feed-meta">
                   {item.incident_type || "Unknown type"} •{" "}
                   {item.location_text || "Unknown location"}
                 </div>
@@ -139,7 +113,7 @@ export default function RightPanel({ metrics, feed }) {
                     href={item.source_url}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ fontSize: 12, color: "#2AA7FF" }}
+                    className="feed-link"
                   >
                     Read more
                   </a>
@@ -147,9 +121,7 @@ export default function RightPanel({ metrics, feed }) {
               </div>
             ))
           ) : (
-            <div className="small" style={{ color: "#9aa7bf" }}>
-              Waiting for live data...
-            </div>
+            <div className="empty-state">Waiting for live data...</div>
           )}
         </div>
       </div>

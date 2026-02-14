@@ -7,20 +7,16 @@ export default function ReportModal({ isOpen, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>Report New Incident</h3>
-          <button className="close" onClick={onClose}>✕</button>
+      <div className="report-shell" onClick={(e) => e.stopPropagation()}>
+        <div className="report-shell-head">
+          <div>
+            <p className="report-eyebrow">Incident intake</p>
+            <h3>Report new incident</h3>
+          </div>
+          <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
-        <div style={{ marginBottom: 12 }}>
-          {/* Reuse your existing ReportForm component */}
-          <ReportForm />
-        </div>
-
-        <div style={{ textAlign: "right" }}>
-          <button className="btn ghost" onClick={onClose}>Close</button>
-        </div>
+        <ReportForm />
       </div>
     </div>
   );

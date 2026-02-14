@@ -146,99 +146,77 @@ export default function Sidebar() {
   }
 
   return (
-    <div>
-      <div style={{ marginBottom: 12 }}>
-        <h3>Filters & Search</h3>
-        <div style={{ marginBottom: 10 }}>
-          <input
-            placeholder="Search incidents, locations..."
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: 8,
-              border: "1px solid rgba(255,255,255,0.04)",
-              background: "transparent",
-              color: "var(--muted)",
-            }}
-          />
+    <div className="sidebar">
+      <div className="sidebar-section">
+        <h3>Filters and search</h3>
+        <div className="sidebar-search">
+          <input placeholder="Search incidents, locations..." />
         </div>
 
-        <div style={{ fontWeight: 700, margin: "10px 0" }}>INCIDENT TYPE</div>
+        <div className="filter-title">Incident type</div>
         {INCIDENT_TYPES.map((t) => (
-          <div key={t} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          <div key={t} className="filter-row">
             <input
+              className="filter-checkbox"
               type="checkbox"
               id={`t-${t}`}
               checked={types.includes(t)}
               onChange={() => toggleType(t)}
             />
-            <label htmlFor={`t-${t}`} style={{ marginLeft: 6 }}>
-              {t}
-            </label>
+            <label htmlFor={`t-${t}`}>{t}</label>
           </div>
         ))}
 
-        <div style={{ marginTop: 12, fontWeight: 700 }}>SEVERITY</div>
-        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-          <button className={`btn ghost`} onClick={() => toggleSeverity("critical")}>
+        <div className="filter-title">Severity</div>
+        <div className="severity-buttons">
+          <button className="btn ghost" onClick={() => toggleSeverity("critical")}>
             Critical
           </button>
-          <button className={`btn ghost`} onClick={() => toggleSeverity("moderate")}>
+          <button className="btn ghost" onClick={() => toggleSeverity("moderate")}>
             Moderate
           </button>
-          <button className={`btn ghost`} onClick={() => toggleSeverity("resolved")}>
+          <button className="btn ghost" onClick={() => toggleSeverity("resolved")}>
             Resolved
           </button>
         </div>
 
-        <div style={{ marginTop: 16 }}>
-          <div style={{ fontWeight: 700, marginBottom: 8 }}>TIME RANGE</div>
-          <select
-            value={timeRange}
-            onChange={onTimeChange}
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: 8,
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.04)",
-            }}
-          >
-            {TIME_RANGES.map((r) => (
-              <option key={r.value} value={r.value}>
-                {r.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div className="filter-title">Time range</div>
+        <select
+          className="time-range-select"
+          value={timeRange}
+          onChange={onTimeChange}
+        >
+          {TIME_RANGES.map((r) => (
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: 12 }}>
-        <h3>Recent Incidents</h3>
+      <div className="sidebar-section recent-section">
+        <h3>Recent incidents</h3>
         {filtered.length === 0 ? (
-          <div style={{ padding: 16, color: "var(--muted)" }}>
+          <div className="empty-state">
             No incidents found matching your filters
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="incident-list">
             {filtered.slice(0, 12).map((it) => (
               <div
                 key={it.id || it.title}
-                style={{
-                  background: "rgba(255,255,255,0.02)",
-                  padding: 10,
-                  borderRadius: 8,
-                  cursor: "pointer",
-                }}
+                className="incident-card"
                 onClick={() => focusIncident(it)}
               >
-                <div style={{ fontWeight: 700 }}>{it.title || it.type || "Incident"}</div>
-                <div style={{ fontSize: 12, color: "var(--muted)" }}>
+                <div className="incident-title">
+                  {it.title || it.type || "Incident"}
+                </div>
+                <div className="incident-meta">
                   {it.type} • {new Date(it.created_at || Date.now()).toLocaleString()}
                 </div>
-                <div style={{ fontSize: 12, color: "var(--muted)" }}>
+                <div className="incident-meta">
                   Severity: {it.severity} • Cred:{" "}
-                  {it.credibility || it.credibility === 0 ? it.credibility.toFixed(2) : "—"}
+                  {it.credibility || it.credibility === 0 ? it.credibility.toFixed(2) : "-"}
                 </div>
               </div>
             ))}

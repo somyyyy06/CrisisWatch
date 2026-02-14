@@ -13,26 +13,26 @@ export default function Topbar({ onOpenReport, onOpenAuth, metrics }) {
         <div className="brand">
           <div className="brand-logo">CW</div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700 }}>Crisis Mapping Dashboard</div>
-            <div style={{ fontSize: 12, color: "#9aa7bf" }}>Real-time disaster response system</div>
+            <div className="brand-title">Crisis Mapping Dashboard</div>
+            <div className="brand-subtitle">Real-time disaster response system</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div className="topbar-actions">
           <div className="inline-status" aria-hidden>
-            <div style={{ fontSize: 13, color: "#e6eefc", marginRight: 8 }}>Live Updates Active</div>
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ color: "#ff6b6b", fontWeight: 700 }}>{critical}</div>
-                <div style={{ fontSize: 12, color: "#9aa7bf" }}>Critical</div>
+            <div className="status-label">Live updates active</div>
+            <div className="status-grid">
+              <div className="status-item">
+                <div className="status-value critical">{critical}</div>
+                <div className="status-caption">Critical</div>
               </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ color: "#f39c12", fontWeight: 700 }}>{moderate}</div>
-                <div style={{ fontSize: 12, color: "#9aa7bf" }}>Moderate</div>
+              <div className="status-item">
+                <div className="status-value moderate">{moderate}</div>
+                <div className="status-caption">Moderate</div>
               </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ color: "#27ae60", fontWeight: 700 }}>{resolved}</div>
-                <div style={{ fontSize: 12, color: "#9aa7bf" }}>Resolved</div>
+              <div className="status-item">
+                <div className="status-value resolved">{resolved}</div>
+                <div className="status-caption">Resolved</div>
               </div>
             </div>
           </div>
@@ -43,12 +43,11 @@ export default function Topbar({ onOpenReport, onOpenAuth, metrics }) {
 
             {/* account icon -> open auth modal */}
             <button
-              className="btn ghost"
-              style={{ borderRadius: 20, width: 40, height: 40, padding: 0 }}
+              className="btn ghost account-button"
               onClick={() => onOpenAuth("login")}
               title="Account"
             >
-              <span style={{ width: "100%", display: "inline-block", textAlign: "center", color: "#9aa7bf" }}>👤</span>
+              <span className="account-icon">A</span>
             </button>
           </div>
         </div>
