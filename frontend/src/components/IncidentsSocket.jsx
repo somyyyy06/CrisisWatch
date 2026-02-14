@@ -1,5 +1,5 @@
 // src/components/IncidentsSocket.jsx
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const API = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
