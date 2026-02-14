@@ -89,3 +89,37 @@ async def submit_incident(
         print("WebSocket broadcast failed:", e)
 
     return db_incident
+
+
+@router.get("/geojson")
+def get_incidents_geojson(db: Session = Depends(database.get_db)):
+    """
+    Return all incidents as GeoJSON FeatureCollection for map display.
+    """
+    incidents = db.query(models.Incident).all()
+    
+    features = []
+    for inc in incidents:
+        if inc.lon is not None and inc.lat is not None:
+            feature = {
+                "type": "Feature",
+                "properties": {
+                    "id": inc.id,
+                    "title": inc.title,
+                    "description": inc.description,
+                    "disaster_type": inc.disaster_type,
+                    "credibility_score": inc.credibility_score,
+                    "photo_path": inc.photo_path,
+                    "created_at": inc.created_at.isoformat() if inc.created_at else None,
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [inc.lon, inc.lat]
+                }
+            }
+            features.append(feature)
+    
+    return {
+        "type": "FeatureCollection",
+        "features": features
+    }
