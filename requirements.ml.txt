@@ -1,7 +1,0 @@
-transformers
-torch
-datasets
-accelerate
-scikit-learn
-xgboost
-bentoml
