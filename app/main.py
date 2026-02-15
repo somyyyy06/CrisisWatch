@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
 import os
+import sys
 import logging
 
 # ✅ ABSOLUTE IMPORTS (CRITICAL)
@@ -14,7 +15,8 @@ from app.api.feed import router as feed_router
 from app.api import subscriptions, incidents
 from app.api.websocket_manager import manager
 
-
+print("Python:", sys.version)
+print("PORT:", os.environ.get("PORT"))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
