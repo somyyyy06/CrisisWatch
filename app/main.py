@@ -14,10 +14,17 @@ from app.api.feed import router as feed_router
 from app.api import subscriptions, incidents
 from app.api.websocket_manager import manager
 
+print("🚀 app.main import started")
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+print("✅ FastAPI object about to be created")
+
 app = FastAPI(title="CrisisWatch API", version="1.0.0")
+
+print("✅ FastAPI object created")
 
 # ----------------------------
 # Static uploads
