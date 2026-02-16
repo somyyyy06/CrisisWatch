@@ -108,31 +108,51 @@ def health():
 # Metrics Summary
 @app.get("/metrics/summary")
 def get_metrics_summary(db: Session = Depends(get_db)):
-    """
-    Return dashboard metrics: incident counts by severity, totals, etc.
-    """
-    total = db.query(models.Incident).count()
-    scraped_total = db.query(models.ScrapedIncident).count()
-    
-    # Count by credibility score ranges
-    critical = db.query(models.Incident).filter(models.Incident.credibility_score >= 0.8).count()
-    moderate = db.query(models.Incident).filter(
-        models.Incident.credibility_score >= 0.5,
-        models.Incident.credibility_score < 0.8
-    ).count()
-    resolved = db.query(models.Incident).filter(models.Incident.credibility_score < 0.5).count()
-    
-    return {
-        "total_incidents": total,
-        "active_incidents": critical + moderate,
-        "critical": critical,
-        "moderate": moderate,
-        "resolved": resolved,
-        "scraped_feed_count": scraped_total,
-        "ai_accuracy": 0.75,
-        "response_time": "2.4m",
-        "data_sources": 5,
-    }
+    try:
+        total = db.query(models.Incident).count()
+
+        # ScrapedIncident may not exist yet → protect it
+        try:
+            scraped_total = db.query(models.ScrapedIncident).count()
+        except Exception:
+            scraped_total = 0
+
+        critical = db.query(models.Incident).filter(
+            models.Incident.credibility_score >= 0.8
+        ).count()
+
+        moderate = db.query(models.Incident).filter(
+            models.Incident.credibility_score >= 0.5,
+            models.Incident.credibility_score < 0.8
+        ).count()
+
+        resolved = db.query(models.Incident).filter(
+            models.Incident.credibility_score < 0.5
+        ).count()
+
+        return {
+            "total_incidents": total,
+            "active_incidents": critical + moderate,
+            "critical": critical,
+            "moderate": moderate,
+            "resolved": resolved,
+            "scraped_feed_count": scraped_total,
+            "ai_accuracy": 0.75,
+            "response_time": "2.4m",
+            "data_sources": 5,
+        }
+
+    except Exception as e:
+        # NEVER crash the frontend
+        return {
+            "total_incidents": 0,
+            "active_incidents": 0,
+            "critical": 0,
+            "moderate": 0,
+            "resolved": 0,
+            "scraped_feed_count": 0,
+            "error": str(e),
+        }
 
 # ----------------------------
 # WebSocket
