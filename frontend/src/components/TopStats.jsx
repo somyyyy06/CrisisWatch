@@ -1,11 +1,6 @@
 // src/components/TopStats.jsx
 import React, { useEffect, useState } from "react";
-
-const API =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000"
-    : "https://crisiswatch.onrender.com");
+import { API_BASE } from "../config/api";
 
 function StatCard({ title, big, sub, color }) {
   return (
@@ -31,7 +26,7 @@ export default function TopStats() {
 
   async function fetchMetrics() {
     try {
-      const resp = await fetch(`${API}/metrics/summary`);
+      const resp = await fetch(`${API_BASE}/metrics/summary`);
       if (!resp.ok) return;
       const data = await resp.json();
       setMetrics((prev) => ({ ...prev, ...data }));

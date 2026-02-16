@@ -1,12 +1,7 @@
 // src/components/RightPanel.jsx
 import React, { useState } from "react";
 import PerformanceMetrics from "./PerformanceMetrics";
-
-const API =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000"
-    : "https://crisiswatch.onrender.com");
+import { API_BASE } from "../config/api";
 
 export default function RightPanel({ metrics, feed }) {
   const m = metrics || { apiTime: 142, accuracy: 75, dataProcessing: 76 };
@@ -22,7 +17,7 @@ export default function RightPanel({ metrics, feed }) {
     setLoading(true);
     setSummary(""); // clear old result
     try {
-      const response = await fetch(`${API}/summarize`, {
+      const response = await fetch(`${API_BASE}/summarize`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

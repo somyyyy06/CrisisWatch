@@ -1,18 +1,13 @@
 // src/components/IncidentsSocket.jsx
 import { useEffect, useRef } from "react";
-
-const API =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000"
-    : "https://crisiswatch.onrender.com");
+import { API_BASE } from "../config/api";
 
 export default function IncidentsSocket() {
   const wsRef = useRef(null);
 
   useEffect(() => {
     // build ws URL (http -> ws)
-    let base = API;
+    let base = API_BASE;
     if (base.endsWith("/")) base = base.slice(0, -1);
     const wsBase = base.replace(/^http/, "ws");
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;

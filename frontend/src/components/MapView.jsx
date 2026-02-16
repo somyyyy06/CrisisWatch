@@ -2,13 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-
-const API =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000"
-    : "https://crisiswatch.onrender.com");
-const WS_BASE = process.env.REACT_APP_WS_URL || API; // e.g. http://127.0.0.1:8000
+import { API_BASE, WS_BASE } from "../config/api";
 
 // severity thresholds by credibility_score
 function severityFromCred(score = 0.5) {
@@ -117,7 +111,7 @@ export default function MapView() {
 
   async function loadIncidents() {
     try {
-      const resp = await fetch(`${API}/incidents/geojson`);
+      const resp = await fetch(`${API_BASE}/incidents/geojson`);
       if (!resp.ok) {
         console.warn("Couldn't fetch incidents geojson:", resp.status);
         return;

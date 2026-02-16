@@ -1,11 +1,6 @@
 // src/components/AuthForm.jsx
 import React, { useState, useEffect } from "react";
-
-const API =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000"
-    : "https://crisiswatch.onrender.com");
+import { API_BASE } from "../config/api";
 
 export default function AuthForm({ initialMode = "login", mode: controlledMode, onModeChange, onAuth }) {
   const [mode, setMode] = useState(initialMode);
@@ -34,7 +29,7 @@ export default function AuthForm({ initialMode = "login", mode: controlledMode, 
       form.append("username", emailArg);
       form.append("password", passwordArg);
 
-      const resp = await fetch(`${API}/auth/token`, {
+      const resp = await fetch(`${API_BASE}/auth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: form,
@@ -76,7 +71,7 @@ export default function AuthForm({ initialMode = "login", mode: controlledMode, 
       setStatus("Signing up...");
       try {
         // ✅ FIXED: use /auth/signup instead of /auth/register
-        const resp = await fetch(`${API}/auth/signup`, {
+        const resp = await fetch(`${API_BASE}/auth/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: email, email, password }),

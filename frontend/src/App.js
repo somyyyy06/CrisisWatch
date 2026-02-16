@@ -8,13 +8,8 @@ import ReportModal from "./components/ReportModal";
 import AuthModal from "./components/AuthModal";
 import TopStats from "./components/TopStats";
 import IncidentsSocket from "./components/IncidentsSocket";
+import { API_BASE } from "./config/api";
 import "./App.css";
-
-const API =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000"
-    : "https://crisiswatch.onrender.com");
 
 export default function App() {
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -28,7 +23,7 @@ export default function App() {
     let mounted = true;
     async function load() {
       try {
-        const res = await fetch(`${API}/metrics/summary`);
+        const res = await fetch(`${API_BASE}/metrics/summary`);
         if (!res.ok) return;
         const data = await res.json();
         if (mounted) setMetrics(data);
@@ -49,7 +44,7 @@ export default function App() {
     let mounted = true;
     async function fetchFeed() {
       try {
-        const res = await fetch(`${API}/feed/live`);
+        const res = await fetch(`${API_BASE}/feed/live`);
         if (!res.ok) return;
         const data = await res.json();
         if (mounted) setFeed(data);
