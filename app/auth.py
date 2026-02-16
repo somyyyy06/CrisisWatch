@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
-from app import models, crud
+# from app import models, crud
 import os
 
 # ----------------------------
@@ -50,13 +50,13 @@ def decode_access_token(token: str) -> Optional[dict]:
 # ----------------------------
 # Authenticate user
 # ----------------------------
-def authenticate_user(db: Session, username: str, password: str):
-    user = crud.get_user_by_username(db, username)
-    if not user:
-        return None
-    if not verify_password(password, user.hashed_password):
-        return None
-    return user
+# def authenticate_user(db: Session, username: str, password: str):
+#     user = crud.get_user_by_username(db, username)
+#     if not user:
+#         return None
+#     if not verify_password(password, user.hashed_password):
+#         return None
+#     return user
 
 # ----------------------------
 # FastAPI dependency
