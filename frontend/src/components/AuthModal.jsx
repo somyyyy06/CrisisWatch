@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 import AuthForm from "./AuthForm"; // your existing AuthForm (we already improved it earlier)
 
 export default function AuthModal({ isOpen, onClose, initialMode = "login", onAuth }) {
-  if (!isOpen) return null;
-
   const [mode, setMode] = useState(initialMode || "login");
 
   useEffect(() => {
     if (isOpen) setMode(initialMode || "login");
   }, [isOpen, initialMode]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
