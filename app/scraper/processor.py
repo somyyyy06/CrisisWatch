@@ -1,8 +1,6 @@
 # backend/scraper/processor.py
 import requests
 from bs4 import BeautifulSoup
-from transformers import pipeline
-import spacy
 from geopy.geocoders import Nominatim
 from app.database import SessionLocal
 from app import models
@@ -33,14 +31,27 @@ def fetch_url(url):
         return None
 
 # --------------------------
-# Load Models (once per process)
+# Load Models (once per process, lazy)
 # --------------------------
-nlp_spacy = spacy.load("en_core_web_sm")
+_nlp_spacy = None
+_classifier = None
+_summarizer = None
+
 geolocator = Nominatim(user_agent="crisis_watch_app", timeout=10)
 
-# Choose smaller models for local dev
-classifier = pipeline("zero-shot-classification", model="typeform/distilbert-base-uncased-mnli")
-summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+def _get_models():
+    global _nlp_spacy, _classifier, _summarizer
+
+    if _nlp_spacy is None or _classifier is None or _summarizer is None:
+        import spacy
+        from transformers import pipeline
+
+        _nlp_spacy = spacy.load("en_core_web_sm")
+        # Choose smaller models for local dev
+        _classifier = pipeline("zero-shot-classification", model="typeform/distilbert-base-uncased-mnli")
+        _summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+
+    return _nlp_spacy, _classifier, _summarizer
 
 CANDIDATE_LABELS = ["flood", "earthquake", "fire", "crime", "traffic", "wildfire", "protest", "other"]
 
@@ -49,6 +60,7 @@ CANDIDATE_LABELS = ["flood", "earthquake", "fire", "crime", "traffic", "wildfire
 # --------------------------
 def classify_text(text):
     try:
+        _, classifier, _ = _get_models()
         res = classifier(text[:512], candidate_labels=CANDIDATE_LABELS)
         return res["labels"][0], float(res["scores"][0])
     except Exception as e:
@@ -59,6 +71,7 @@ def classify_text(text):
 # Location Extraction
 # --------------------------
 def extract_location(text):
+    nlp_spacy, _, _ = _get_models()
     doc = nlp_spacy(text[:5000])
     places = [ent.text for ent in doc.ents if ent.label_ in ("GPE", "LOC", "FAC")]
     if not places:
@@ -77,6 +90,7 @@ def extract_location(text):
 # --------------------------
 def summarize_text(text):
     try:
+        _, _, summarizer = _get_models()
         out = summarizer(text, max_length=80, min_length=20, do_sample=False)
         return out[0]["summary_text"]
     except Exception:
