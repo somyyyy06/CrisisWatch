@@ -25,10 +25,13 @@
 
 
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base
 
-SessionLocal = None
+Base = declarative_base()
+
 engine = None
+SessionLocal = None
 
 def get_db():
     raise RuntimeError("Database disabled for port testing")
+
