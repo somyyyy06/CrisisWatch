@@ -10,7 +10,7 @@ USGS_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.g
 def _exists_similar(db: Session, title: str, lon: float, lat: float):
     # Lightweight de-dup: same title & ~same coordinates
     return db.query(models.Incident).filter(
-        models.Incident.disaster_type == "Earthquake",
+        models.Incident.incident_type == "Earthquake",
         models.Incident.title == title,
         func.abs(models.Incident.lon - lon) < 0.0001,
         func.abs(models.Incident.lat - lat) < 0.0001
@@ -42,8 +42,7 @@ def fetch_and_store(db: Session, min_mag: float = 0.0):
             db=db,
             title=title,
             description=props.get("url") or "USGS event",
-            disaster_type="Earthquake",
-            credibility_score=0.95 if mag is None else max(0.6, min(0.99, 0.6 + (float(mag) / 10))),
+            incident_type="Earthquake",
             lon=float(lon),
             lat=float(lat),
         )

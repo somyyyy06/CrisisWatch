@@ -11,12 +11,11 @@ router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
 
 
 class SubscriptionCreate(BaseModel):
-    email: str
-    disaster_type: str
-    location_lat: float
-    location_lon: float
-    radius_km: Optional[float] = 5.0
-    keywords: Optional[str] = ""
+    location_text: str
+    incident_types: Optional[str] = None  # Can store JSON array as text
+    lon: Optional[float] = None
+    lat: Optional[float] = None
+    radius_km: Optional[float] = 10.0
 
 
 @router.post("/")
@@ -28,36 +27,23 @@ def create_subscription(
     try:
         sub = Subscription(
             user_id=current_user.id,
-            email=payload.email,
-            disaster_type=payload.disaster_type,
-            location_lat=payload.location_lat,
-            location_lon=payload.location_lon,
-            radius_km=payload.radius_km,
-            keywords=payload.keywords,
+            location_text=payload.location_text,
+            lon=payload.lon,
+            lat=payload.lat,
+            radius_km=payload.radius_km or 10.0,
+            incident_types=payload.incident_types,
         )
         db.add(sub)
         db.commit()
         db.refresh(sub)
 
-        # ✅ Use text() for raw SQL
-        db.execute(
-            text(
-                "UPDATE subscriptions "
-                "SET location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) "
-                "WHERE id = :id"
-            ),
-            {"lon": payload.location_lon, "lat": payload.location_lat, "id": sub.id},
-        )
-        db.commit()
-
         return {
             "id": sub.id,
-            "email": payload.email,
-            "disaster_type": payload.disaster_type,
-            "location_lat": payload.location_lat,
-            "location_lon": payload.location_lon,
+            "location_text": payload.location_text,
+            "lon": payload.lon,
+            "lat": payload.lat,
             "radius_km": payload.radius_km,
-            "keywords": payload.keywords,
+            "incident_types": payload.incident_types,
         }
 
     except Exception as e:

@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
 from app import database, models, schemas
-from app.ml.inference import get_credibility_score
 from app.auth import get_current_user
 from app.ws import manager 
 
@@ -18,49 +17,37 @@ UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-@router.post("/submit", response_model=schemas.Incident)
+@router.post("/submit")
 async def submit_incident(
     title: str = Form(...),
     description: str = Form(...),
-    disaster_type: str = Form(...),
+    incident_type: str = Form(...),
+    location_text: str = Form(None),
+    severity: str = Form("moderate"),
     lon: float = Form(...),
     lat: float = Form(...),
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     db: Session = Depends(database.get_db),
     current_user=Depends(get_current_user),
 ):
-    # Validate file type
-    file_ext = os.path.splitext(file.filename)[1].lower()
-    if file_ext not in [".jpg", ".jpeg", ".png"]:
-        raise HTTPException(
-            status_code=400, detail="Invalid file type. Only jpg/jpeg/png allowed."
-        )
+    # Optional file upload (for future use)
+    # if file:
+    #     file_ext = os.path.splitext(file.filename)[1].lower()
+    #     if file_ext not in [".jpg", ".jpeg", ".png"]:
+    #         raise HTTPException(
+    #             status_code=400, detail="Invalid file type. Only jpg/jpeg/png allowed."
+    #         )
 
-    # Generate unique filename
-    filename = f"{datetime.utcnow().timestamp()}_{file.filename}"
-
-    # Absolute save path
-    save_path = os.path.join(UPLOAD_DIR, filename)
-
-    # Save file to disk
-    with open(save_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    # Run AI credibility scoring
-    credibility = get_credibility_score(f"{title} {description}")
-
-    # Store relative path in DB (so frontend can use /uploads/{filename})
-    relative_path = f"uploads/{filename}"
-
-    # Save incident to DB
+    # Save incident to DB with new schema
     db_incident = models.Incident(
         title=title,
         description=description,
-        disaster_type=disaster_type,
-        credibility_score=credibility,
+        incident_type=incident_type,
+        location_text=location_text,
+        severity=severity,
         lon=lon,
         lat=lat,
-        photo_path=relative_path,
+        reported_by=current_user.id,
     )
     db.add(db_incident)
     db.commit()
@@ -73,12 +60,11 @@ async def submit_incident(
                 "id": db_incident.id,
                 "title": db_incident.title,
                 "description": db_incident.description,
-                "disaster_type": db_incident.disaster_type,
-                "credibility_score": db_incident.credibility_score,
+                "incident_type": db_incident.incident_type,
+                "severity": db_incident.severity,
+                "location_text": db_incident.location_text,
                 "lon": db_incident.lon,
                 "lat": db_incident.lat,
-                # send relative path so frontend can construct a URL if you mount /uploads
-                "photo_path": db_incident.photo_path,
                 "created_at": db_incident.created_at.isoformat() if db_incident.created_at else None,
             },
         }
@@ -107,9 +93,9 @@ def get_incidents_geojson(db: Session = Depends(database.get_db)):
                     "id": inc.id,
                     "title": inc.title,
                     "description": inc.description,
-                    "disaster_type": inc.disaster_type,
-                    "credibility_score": inc.credibility_score,
-                    "photo_path": inc.photo_path,
+                    "incident_type": inc.incident_type,
+                    "severity": inc.severity,
+                    "location_text": inc.location_text,
                     "created_at": inc.created_at.isoformat() if inc.created_at else None,
                 },
                 "geometry": {

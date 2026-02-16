@@ -30,14 +30,10 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # ----------------------------
-# CORS
+# CORS - Allow all origins for now (restrict in production if needed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://crisis-watch.vercel.app",
-        "https://crisis-watch-jjp12g3sm-somyyyy06s-projects.vercel.app",
-        "https://crisis-watch-a6y3xr605-somyyyy06s-projects.vercel.app",
-    ],
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -117,33 +113,29 @@ def get_metrics_summary(db: Session = Depends(get_db)):
         except Exception:
             scraped_total = 0
 
+        # Use severity instead of credibility_score
         critical = db.query(models.Incident).filter(
-            models.Incident.credibility_score >= 0.8
+            models.Incident.severity == "critical"
         ).count()
 
         moderate = db.query(models.Incident).filter(
-            models.Incident.credibility_score >= 0.5,
-            models.Incident.credibility_score < 0.8
+            models.Incident.severity == "moderate"
         ).count()
 
         resolved = db.query(models.Incident).filter(
-            models.Incident.credibility_score < 0.5
+            models.Incident.severity == "resolved"
         ).count()
 
         return {
             "total_incidents": total,
-            "active_incidents": critical + moderate,
+            "active_incidents": total - resolved,
             "critical": critical,
             "moderate": moderate,
             "resolved": resolved,
             "scraped_feed_count": scraped_total,
-            "ai_accuracy": 0.75,
-            "response_time": "2.4m",
-            "data_sources": 5,
         }
-
     except Exception as e:
-        # NEVER crash the frontend
+        logger.error(f"Error in /metrics/summary: {e}")
         return {
             "total_incidents": 0,
             "active_incidents": 0,
@@ -151,7 +143,7 @@ def get_metrics_summary(db: Session = Depends(get_db)):
             "moderate": 0,
             "resolved": 0,
             "scraped_feed_count": 0,
-            "error": str(e),
+            "error": str(e)
         }
 
 # ----------------------------
