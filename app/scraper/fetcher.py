@@ -11,3 +11,4 @@ def fetch_url(url, timeout=10):
     except Exception as e:
         print(f"Error fetching {url}: {e}")
         return None
+
