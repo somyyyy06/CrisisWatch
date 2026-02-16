@@ -33,7 +33,11 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://crisis-watch.vercel.app",
+        "https://crisis-watch-jjp12g3sm-somyyyy06s-projects.vercel.app",
+        "https://crisis-watch-a6y3xr605-somyyyy06s-projects.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
