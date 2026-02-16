@@ -1,37 +1,23 @@
-# # backend/database.py
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker, declarative_base
-# import os
-# from dotenv import load_dotenv
+# backend/database.py
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+import os
+from dotenv import load_dotenv
 
-# load_dotenv()
-# DATABASE_URL = os.getenv("DATABASE_URL")
-# if not DATABASE_URL:
-#     raise ValueError("DATABASE_URL is not set in the .env file")
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set in the .env file")
 
-# engine = create_engine(DATABASE_URL)
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# # Declare Base here
-# Base = declarative_base()
-
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-
-
-
-from sqlalchemy.orm import declarative_base
-
+# Declare Base here
 Base = declarative_base()
 
-engine = None
-SessionLocal = None
-
 def get_db():
-    raise RuntimeError("Database disabled for port testing")
-
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
