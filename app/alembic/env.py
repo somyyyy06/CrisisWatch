@@ -39,16 +39,25 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-    # Override sqlalchemy.url with DATABASE_URL from environment
+    # Get DATABASE_URL from environment
     db_url = os.getenv("DATABASE_URL")
-    if db_url:
-        # Convert postgres:// to postgresql:// for SQLAlchemy
-        if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql://", 1)
-        config.set_main_option("sqlalchemy.url", db_url)
+    
+    if not db_url:
+        raise ValueError(
+            "DATABASE_URL environment variable is not set. "
+            "Please set it in your Render environment variables."
+        )
+    
+    # Convert postgres:// to postgresql:// for SQLAlchemy
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    
+    # Set the URL in config
+    configuration = config.get_section(config.config_ini_section, {})
+    configuration["sqlalchemy.url"] = db_url
     
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
