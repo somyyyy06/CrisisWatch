@@ -1,11 +1,19 @@
-from fastapi import FastAPI
-import os
-import sys
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+import os, sys
 
 print("Python version:", sys.version)
 print("PORT:", os.environ.get("PORT"))
 
-app = FastAPI()
+app = FastAPI(title="CrisisWatch API")
+
+def get_db():
+    from app.database import SessionLocal  # LAZY IMPORT
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @app.get("/")
 def root():
@@ -14,3 +22,7 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+@app.get("/db-check")
+def db_check(db: Session = Depends(get_db)):
+    return {"db": "connected"}
