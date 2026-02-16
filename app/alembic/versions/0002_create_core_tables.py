@@ -21,6 +21,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
+    # Enable PostGIS extension for geometry types
+    op.execute('CREATE EXTENSION IF NOT EXISTS postgis')
+    
     # Create incidents table
     op.create_table('incidents',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -68,3 +71,5 @@ def downgrade() -> None:
     op.drop_index('idx_incidents_geom', table_name='incidents')
     op.drop_index(op.f('ix_incidents_id'), table_name='incidents')
     op.drop_table('incidents')
+    
+    # Note: Not dropping postgis extension in case other tables use it
