@@ -27,10 +27,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 # Password helpers
 # ----------------------------
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    # Bcrypt has a 72-byte limit - truncate if needed
+    password_bytes = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+    return pwd_context.hash(password_bytes)
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    # Truncate to match hashing behavior
+    password_bytes = plain.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+    return pwd_context.verify(password_bytes, hashed)
 
 # ----------------------------
 # Token helpers

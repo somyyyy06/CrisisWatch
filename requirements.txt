@@ -4,15 +4,14 @@ gunicorn==23.0.0
 
 sqlalchemy
 psycopg2-binary
-geoalchemy2
 alembic
 
 python-dotenv
 python-multipart
 email-validator
 
-passlib[bcrypt]
-bcrypt
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
 
 celery
 redis
