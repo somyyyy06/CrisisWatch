@@ -85,7 +85,7 @@ def get_severity_counts(db: Session):
 # ----------------------------
 # INCIDENT CRUD
 # ----------------------------
-def create_incident(db: Session, title: str, description: str, disaster_type: str, lon: float, lat: float):
+def create_incident(db: Session, title: str, description: str, incident_type: str, lon: float, lat: float):
     from app.tasks import notify_user_email
 
     credibility_score = get_credibility_score(title, description)
@@ -93,30 +93,26 @@ def create_incident(db: Session, title: str, description: str, disaster_type: st
     db_incident = models.Incident(
         title=title,
         description=description,
-        disaster_type=disaster_type,
-        credibility_score=credibility_score,
+        incident_type=incident_type,
         lon=lon,
-        lat=lat,
-        location=func.ST_SetSRID(func.ST_MakePoint(lon, lat), 4326)
+        lat=lat
     )
 
     db.add(db_incident)
     db.commit()
     db.refresh(db_incident)
 
-    # Notify subscribers (if any within radius)
-    sql = """
-    SELECT id, user_id, radius_km
-    FROM subscriptions
-    WHERE ST_DWithin(
-        location,
-        ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
-        radius_km * 1000
-    )
-    """
-    rows = db.execute(text(sql), {"lon": lon, "lat": lat}).fetchall()
-    for row in rows:
-        notify_user_email.delay(row.user_id, db_incident.id)
+    # Notify subscribers (simplified - check all subscriptions with basic distance)
+    # For production, consider using PostGIS or a proper geospatial index
+    # This is a simplified version without PostGIS
+    subscriptions = db.query(models.Subscription).all()
+    for sub in subscriptions:
+        if sub.lon and sub.lat and sub.radius_km:
+            # Simple distance check (rough approximation)
+            # For accurate distance, use haversine formula in production
+            dist_km = ((sub.lon - lon)**2 + (sub.lat - lat)**2)**0.5 * 111  # ~111km per degree
+            if dist_km <= sub.radius_km:
+                notify_user_email.delay(sub.user_id, db_incident.id)
 
     return db_incident
 
@@ -124,12 +120,20 @@ def get_incidents(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Incident).offset(skip).limit(limit).all()
 
 def get_incidents_nearby(db: Session, lon: float, lat: float, radius_km: float = 5.0, limit: int = 50):
-    point = func.ST_SetSRID(func.ST_MakePoint(lon, lat), 4326)
-    meters = float(radius_km) * 1000.0
-    q = (
-        db.query(models.Incident)
-        .filter(func.ST_DWithin(models.Incident.location, point, meters))
-        .order_by(func.ST_Distance(models.Incident.location, point))
-        .limit(limit)
-    )
-    return q.all()
+    # Simplified version without PostGIS - fetches all and filters in Python
+    # For production with many incidents, use PostGIS or spatial index
+    all_incidents = db.query(models.Incident).filter(
+        models.Incident.lon.isnot(None),
+        models.Incident.lat.isnot(None)
+    ).all()
+    
+    # Filter by distance (rough approximation)
+    nearby = []
+    for inc in all_incidents:
+        dist_km = ((inc.lon - lon)**2 + (inc.lat - lat)**2)**0.5 * 111  # ~111km per degree
+        if dist_km <= radius_km:
+            nearby.append((dist_km, inc))
+    
+    # Sort by distance and limit
+    nearby.sort(key=lambda x: x[0])
+    return [inc for _, inc in nearby[:limit]]
