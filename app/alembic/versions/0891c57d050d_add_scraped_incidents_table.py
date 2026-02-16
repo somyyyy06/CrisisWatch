@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '0891c57d050d'
-down_revision: Union[str, Sequence[str], None] = '0001_create_users_table'
+down_revision: Union[str, Sequence[str], None] = '0002_create_core_tables'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -37,7 +37,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_scraped_incidents_id'), 'scraped_incidents', ['id'], unique=False)
     # op.drop_table('spatial_ref_sys')
-    op.create_foreign_key(None, 'subscriptions', 'users', ['user_id'], ['id'])
+    # Foreign key already exists from previous migration
     op.alter_column('users', 'is_active',
                existing_type=sa.BOOLEAN(),
                nullable=True,
@@ -60,7 +60,7 @@ def downgrade() -> None:
                existing_type=sa.BOOLEAN(),
                nullable=False,
                existing_server_default=sa.text('true'))
-    op.drop_constraint(None, 'subscriptions', type_='foreignkey')
+    # Foreign key handled by previous migration
     op.create_table('spatial_ref_sys',
     sa.Column('srid', sa.INTEGER(), autoincrement=False, nullable=False),
     sa.Column('auth_name', sa.VARCHAR(length=256), autoincrement=False, nullable=True),
