@@ -8,10 +8,12 @@ from datetime import datetime
 # ----------------------------
 class IncidentBase(BaseModel):
     title: str = Field(..., min_length=3, max_length=200)
-    description: str = Field(..., min_length=3)
-    disaster_type: str = Field(..., min_length=3, max_length=50)
-    lon: float = Field(..., ge=-180.0, le=180.0)
-    lat: float = Field(..., ge=-90.0, le=90.0)
+    description: Optional[str] = None
+    incident_type: Optional[str] = None
+    location_text: Optional[str] = None
+    lon: Optional[float] = Field(None, ge=-180.0, le=180.0)
+    lat: Optional[float] = Field(None, ge=-90.0, le=90.0)
+    severity: Optional[str] = None
 
 
 class IncidentCreate(IncidentBase):
@@ -20,9 +22,9 @@ class IncidentCreate(IncidentBase):
 
 class Incident(IncidentBase):
     id: int
-    credibility_score: float
-    photo_path: Optional[str] = None
+    reported_by: Optional[int] = None
     created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

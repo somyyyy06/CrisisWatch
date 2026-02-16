@@ -5,17 +5,13 @@ import os
 
 @celery.task
 def process_raw_post(text, source=None):
-    from .ml.inference import get_credibility_score
-
     db = SessionLocal()
     try:
-        cred = get_credibility_score(text)
         created = crud.create_incident(
             db=db,
             title=f"Auto: {text[:20]}",
             description=text,
-            disaster_type="Unknown",
-            credibility_score=cred,
+            incident_type="Unknown",
             lon=77.0, lat=28.0
         )
     finally:
