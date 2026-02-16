@@ -7,16 +7,24 @@ const API =
     ? "http://127.0.0.1:8000"
     : "https://crisiswatch.onrender.com");
 
-export default function AuthForm({ initialMode = "login", onAuth }) {
+export default function AuthForm({ initialMode = "login", mode: controlledMode, onModeChange, onAuth }) {
   const [mode, setMode] = useState(initialMode);
+  const activeMode = controlledMode ?? mode;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setMode(initialMode || "login");
-  }, [initialMode]);
+    if (controlledMode == null) {
+      setMode(initialMode || "login");
+    }
+  }, [initialMode, controlledMode]);
+
+  const changeMode = (nextMode) => {
+    if (onModeChange) onModeChange(nextMode);
+    if (controlledMode == null) setMode(nextMode);
+  };
 
   const doLogin = async (emailArg = email, passwordArg = password) => {
     setLoading(true);
@@ -63,7 +71,7 @@ export default function AuthForm({ initialMode = "login", onAuth }) {
       return;
     }
 
-    if (mode === "signup") {
+    if (activeMode === "signup") {
       setLoading(true);
       setStatus("Signing up...");
       try {
@@ -157,7 +165,7 @@ export default function AuthForm({ initialMode = "login", onAuth }) {
 
         <div className="auth-actions">
           <button className="btn" type="submit" disabled={loading}>
-            {mode === "login"
+            {activeMode === "login"
               ? loading
                 ? "Signing in..."
                 : "Sign In"
@@ -169,17 +177,17 @@ export default function AuthForm({ initialMode = "login", onAuth }) {
       </form>
 
       <div className="auth-switch">
-        {mode === "login" ? (
+        {activeMode === "login" ? (
           <p>
             New here?{" "}
-            <button type="button" onClick={() => setMode("signup")}>
+            <button type="button" onClick={() => changeMode("signup")}>
               Create an account
             </button>
           </p>
         ) : (
           <p>
             Already registered?{" "}
-            <button type="button" onClick={() => setMode("login")}>
+            <button type="button" onClick={() => changeMode("login")}>
               Sign in instead
             </button>
           </p>
