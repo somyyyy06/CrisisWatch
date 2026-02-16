@@ -1,13 +1,12 @@
 from .celery_app import celery
 from .database import SessionLocal
 from . import crud, models
-from .ml.inference import get_credibility_score
-from .scraper.rss_scraper import fetch_items, fetch_article_text
-from .scraper.processor import process_and_store
 import os
 
 @celery.task
 def process_raw_post(text, source=None):
+    from .ml.inference import get_credibility_score
+
     db = SessionLocal()
     try:
         cred = get_credibility_score(text)
@@ -61,6 +60,9 @@ def scrape_and_store_news():
     Celery Beat task that runs every 24 hours.
     Fetches RSS feeds and stores new incidents in the database.
     """
+    from .scraper.rss_scraper import fetch_items, fetch_article_text
+    from .scraper.processor import process_and_store
+
     print("🔄 Starting news scrape task...")
     
     try:

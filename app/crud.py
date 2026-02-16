@@ -6,7 +6,6 @@ from fastapi import HTTPException, status
 
 from app import models, schemas
 from app.auth import get_password_hash
-from app.tasks import notify_user_email
 from app.ml.inference import get_credibility_score
 
 # ----------------------------
@@ -87,6 +86,8 @@ def get_severity_counts(db: Session):
 # INCIDENT CRUD
 # ----------------------------
 def create_incident(db: Session, title: str, description: str, disaster_type: str, lon: float, lat: float):
+    from app.tasks import notify_user_email
+
     credibility_score = get_credibility_score(title, description)
 
     db_incident = models.Incident(
