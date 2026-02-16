@@ -24,20 +24,25 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="CrisisWatch API", version="1.0.0")
 
 # ----------------------------
-# Static uploads
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-
-# ----------------------------
-# CORS - Allow all origins for now (restrict in production if needed)
+# CORS - Specific origins (required when using credentials)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=[
+        "https://crisis-watch.vercel.app",
+        "https://crisis-watch-3futwoi9d-somyyyy06s-projects.vercel.app",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ----------------------------
+# Static uploads
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # ----------------------------
 # DB Dependency
