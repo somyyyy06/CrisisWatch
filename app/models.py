@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, func, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Float, DateTime, func, Boolean, ForeignKey, Text, ARRAY
 from app.database import Base
 
 
@@ -45,10 +45,10 @@ class Subscription(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     location_text = Column(String, nullable=False)
-    radius_km = Column(Float,nullable=False, server_default='10.0')
-    lon = Column(Float, nullable=True)  # Renamed from location_lon
-    lat = Column(Float, nullable=True)  # Renamed from location_lat
-    incident_types = Column(Text, nullable=True)  # Changed from disaster_type - can store JSON array as text
+    radius_km = Column(Float, nullable=False, server_default='10.0')
+    lon = Column(Float, nullable=True)
+    lat = Column(Float, nullable=True)
+    incident_types = Column(ARRAY(String), nullable=True)  # Array of incident type strings
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
