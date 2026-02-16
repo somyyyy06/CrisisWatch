@@ -1,15 +1,14 @@
 // src/components/IncidentsSocket.jsx
 import { useEffect, useRef } from "react";
-import { API_BASE } from "../config/api";
+import { WS_BASE } from "../config/api";
 
 export default function IncidentsSocket() {
   const wsRef = useRef(null);
 
   useEffect(() => {
-    // build ws URL (http -> ws)
-    let base = API_BASE;
-    if (base.endsWith("/")) base = base.slice(0, -1);
-    const wsBase = base.replace(/^http/, "ws");
+    // Use WS_BASE directly (already converted to ws/wss)
+    let wsBase = WS_BASE;
+    if (wsBase.endsWith("/")) wsBase = wsBase.slice(0, -1);
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const q = token ? `?token=${encodeURIComponent(token)}` : "";
     const url = `${wsBase}/ws/incidents${q}`;

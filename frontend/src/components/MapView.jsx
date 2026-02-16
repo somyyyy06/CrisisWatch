@@ -176,8 +176,8 @@ export default function MapView() {
   function tryWebsocket() {
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      // Convert http/https URL to ws/wss URL
-      let wsUrl = WS_BASE.replace(/^http/, "ws");
+      // Use WS_BASE directly (already converted to ws/wss)
+      let wsUrl = WS_BASE;
       if (wsUrl.endsWith("/")) wsUrl = wsUrl.slice(0, -1);
       wsUrl = `${wsUrl}/ws/incidents${token ? `?token=${token}` : ""}`;
       const ws = new WebSocket(wsUrl);
