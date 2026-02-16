@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 import os, sys, logging
 
 print("Python:", sys.version)
@@ -32,6 +33,8 @@ app.add_middleware(
 # Routers (safe to import now)
 from app.api.feed import router as feed_router
 from app.api import subscriptions, incidents
+from app import database, crud, schemas
+from app.auth import verify_password, create_access_token
 
 app.include_router(feed_router)
 app.include_router(subscriptions.router)
@@ -39,10 +42,8 @@ app.include_router(incidents.router)
 
 # ----------------------------
 # Auth
-@app.post("/auth/signup", status_code=201)
-def signup(payload, db=next(__import__("app.database").database.get_db())):
-    from app import crud
-
+@app.post("/auth/signup", response_model=schemas.UserOut, status_code=201)
+def signup(payload: schemas.UserCreate, db: Session = Depends(database.get_db)):
     if crud.get_user_by_username(db, payload.username):
         raise HTTPException(status_code=400, detail="Username taken")
 
@@ -51,15 +52,12 @@ def signup(payload, db=next(__import__("app.database").database.get_db())):
 
     return crud.create_user(db, payload)
 
-@app.post("/auth/token")
-def login(form: OAuth2PasswordRequestForm = Depends()):
-    from app import crud
-    from app.auth import verify_password, create_access_token
-    from app.database import get_db
-
-    db = next(get_db())
-    user = crud.get_user_by_username(db, form.username) or \
-           crud.get_user_by_email(db, form.username)
+@app.post("/auth/token", response_model=schemas.Token)
+def login(
+    form: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(database.get_db),
+):
+    user = crud.get_user_by_username(db, form.username) or crud.get_user_by_email(db, form.username)
 
     if not user or not verify_password(form.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
