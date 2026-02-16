@@ -109,7 +109,7 @@ export default function App() {
         onClose={() => setIsAuthOpen(false)}
         onAuth={() => {
           setTimeout(() => {
-            fetch(`${API}/metrics/summary`)
+            fetch(`${API_BASE}/metrics/summary`)
               .then((r) => r.json())
               .then((d) => setMetrics(d))
               .catch(() => {});

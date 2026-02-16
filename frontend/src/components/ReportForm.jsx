@@ -44,7 +44,7 @@ export default function ReportForm() {
       form.append("lat", latLon[0]);
       form.append("file", file);
 
-      const resp = await fetch(`${API}/incidents/submit`, {
+      const resp = await fetch(`${API_BASE}/incidents/submit`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         body: form,
