@@ -1,8 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 import os, sys, logging
 
 print("Python:", sys.version)
@@ -30,31 +29,18 @@ app.add_middleware(
 )
 
 # ----------------------------
-# DB Dependency (LAZY)
-def get_db():
-    from app.database import SessionLocal
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Routers (safe to import now)
+from app.api.feed import router as feed_router
+from app.api import subscriptions, incidents
 
-# ----------------------------
-# Routers (LAZY LOAD)
-def include_routers(app: FastAPI):
-    from app.api.feed import router as feed_router
-    from app.api import subscriptions, incidents
-
-    app.include_router(feed_router)
-    app.include_router(subscriptions.router)
-    app.include_router(incidents.router)
-
-include_routers(app)
+app.include_router(feed_router)
+app.include_router(subscriptions.router)
+app.include_router(incidents.router)
 
 # ----------------------------
 # Auth
 @app.post("/auth/signup", status_code=201)
-def signup(payload, db: Session = Depends(get_db)):
+def signup(payload, db=next(__import__("app.database").database.get_db())):
     from app import crud
 
     if crud.get_user_by_username(db, payload.username):
@@ -66,10 +52,12 @@ def signup(payload, db: Session = Depends(get_db)):
     return crud.create_user(db, payload)
 
 @app.post("/auth/token")
-def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(form: OAuth2PasswordRequestForm = Depends()):
     from app import crud
     from app.auth import verify_password, create_access_token
+    from app.database import get_db
 
+    db = next(get_db())
     user = crud.get_user_by_username(db, form.username) or \
            crud.get_user_by_email(db, form.username)
 
